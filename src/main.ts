@@ -1,13 +1,13 @@
 import * as http from 'http'
-import {App} from "./app";
+import { App } from './app'
+import { DB } from './database/CRUD-methods'
 
-
-
-const main = ()=>{
-    const server = http.createServer()
-    const app = new App(server)
-    app.run()
-    return server
+const main = () => {
+  const db = new DB()
+  const server = http.createServer()
+  const app = new App(server, db)
+  app.run()
+  return server
 }
 
-main().listen(3000, ()=>console.log('server runs'))
+main().listen(3000, () => console.log('server runs'))

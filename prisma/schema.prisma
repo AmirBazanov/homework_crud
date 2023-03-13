@@ -7,15 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model genre_movie {
-//   fk_genre_id BigInt
-//   fk_movie_id BigInt
-//   genres      genres @relation(fields: [fk_genre_id], references: [genre_id], onDelete: NoAction, onUpdate: NoAction)
-//   movies      movies @relation(fields: [fk_movie_id], references: [movie_id], onDelete: NoAction, onUpdate: NoAction)
-//
-//   @@id([fk_genre_id, fk_movie_id], map: "pk_genre_movie")
-// }
-
 model genres {
   genre_id BigInt   @id @default(autoincrement())
   name     String   @unique
@@ -24,7 +15,7 @@ model genres {
 
 model movies {
   movie_id        BigInt   @id @default(autoincrement())
-  title           String
+  title           String   @unique
   production_date DateTime @db.Timestamptz(6)
   genres          genres[]
 }
