@@ -2,22 +2,22 @@ import { validate, ValidationError } from 'class-validator'
 import { http_response } from '../types'
 import { toJson } from '../helpers/dto-helper'
 import { plainToClass } from 'class-transformer'
-import { CreateMovieDto } from '../dto/create-movie.dto'
+import { CreateGenreDto } from '../dto/create-genre.dto'
 
-export const createMovieValidation = async (
+export const createGenreValidation = async (
   object: string,
   res: http_response
 ) => {
-  let createMovieDto: CreateMovieDto = new CreateMovieDto()
+  let createGenreDto: CreateGenreDto = new CreateGenreDto()
   try {
-    createMovieDto = plainToClass(CreateMovieDto, JSON.parse(object))
+    createGenreDto = plainToClass(CreateGenreDto, JSON.parse(object))
   } catch (e) {
     res.writeHead(400, { 'Content-Text': 'application/json' })
     res.end(toJson({ error_code: 400, message: 'wrong json format' }))
-    return createMovieDto
+    return createGenreDto
   }
   const error_messages: { [key: string]: string }[] = []
-  validate(createMovieDto)
+  validate(createGenreDto)
     .then((err: ValidationError[]) => {
       err.map(err => {
         if (err.constraints) {
@@ -32,5 +32,5 @@ export const createMovieValidation = async (
         return
       }
     })
-  return createMovieDto
+  return createGenreDto
 }

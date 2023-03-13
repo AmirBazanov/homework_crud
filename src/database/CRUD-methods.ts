@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { CreateMovieDto } from '../dto/create-movie.dto'
 import { createErrors } from './prisma-error-handler'
+import { CreateGenreDto } from '../dto/create-genre.dto'
 
 export class DB {
   private prisma
@@ -40,11 +41,11 @@ export class DB {
     return result
   }
 
-  public deleteMovie = async (title: string) => {
+  public deleteMovie = async (id: number) => {
     let result
     try {
       result = await this.prisma.movies.delete({
-        where: { title: title },
+        where: { movie_id: BigInt(id) },
       })
     } catch (err: any) {
       throw { error_code: err.code, message: err.meta }
@@ -86,16 +87,93 @@ export class DB {
     return result
   }
 
-  public findMovie = async (title: string) => {
-    //TODO Find by DTO title:string, add find by genres, production date range
+  public getMovies = async (id?: number) => {
     let result
     try {
-      result = await this.prisma.movies.findFirst({
-        where: { title: title },
+      result = await this.prisma.movies.findMany(
+        id
+          ? {
+              where: { movie_id: BigInt(id) },
+            }
+          : undefined
+      )
+    } catch (err: any) {
+      console.log(err)
+      throw { error_code: err.code, message: err.meta }
+    }
+    if (result) {
+      return result
+    }
+    throw { error_code: 404, message: 'Such title doesn`t exist' }
+  }
+
+  public createGenre = async (dto: CreateGenreDto) => {
+    let result
+    try {
+      result = await this.prisma.genres.create({
+        data: {
+          name: dto.name,
+        },
+        select: {
+          genre_id: true,
+          name: true,
+          movies: true,
+        },
+      })
+    } catch (err: any) {
+      createErrors(err)
+    }
+    return result
+  }
+
+  public deleteGenre = async (id: number) => {
+    let result
+    try {
+      result = await this.prisma.genres.delete({
+        where: { genre_id: BigInt(id) },
       })
     } catch (err: any) {
       throw { error_code: err.code, message: err.meta }
     }
     return result
+  }
+
+  public updateGenre = async (dto: CreateGenreDto) => {
+    let result
+    try {
+      result = await this.prisma.genres.update({
+        data: {
+          name: dto.name,
+        },
+        select: {
+          genre_id: true,
+          name: true,
+        },
+        where: { name: dto.name },
+      })
+    } catch (err: any) {
+      throw { error_code: err.code, message: err.meta }
+    }
+    return result
+  }
+
+  public getGenres = async (id?: number) => {
+    let result
+    try {
+      result = await this.prisma.genres.findMany(
+        id
+          ? {
+              where: { genre_id: BigInt(id) },
+            }
+          : undefined
+      )
+    } catch (err: any) {
+      console.log(err)
+      throw { error_code: err.code, message: err.meta }
+    }
+    if (result) {
+      return result
+    }
+    throw { error_code: 404, message: 'Such genre_id doesn`t exist' }
   }
 }

@@ -14,9 +14,13 @@ export class App {
   }
 
   public run = async () => {
-    this.controller.create()
-    this.controller.delete()
-    this.controller.update()
-    this.controller.find()
+    this.controller.createMovie()
+    this.controller.deleteMovie()
+    this.controller.updateMovie()
+    this.controller.getMovies()
+    this.controller.createGenre()
+    this.controller.deleteGenre()
+    this.controller.updateGenre()
+    this.controller.getGenres()
   }
 }

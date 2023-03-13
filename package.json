@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p .",
     "start:dev": "npm run build && nodemon",
-    "start": "node ./dist/main.js",
+    "start": "npm run build && node ./dist/main.js",
     "lint": "eslint . --ext .ts",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\""
   },
