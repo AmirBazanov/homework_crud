@@ -31,13 +31,13 @@ npm run start
 
 #### Get all movie items
 
-```http 
+``` 
   GET /movie/find
 ```
 
 #### Get movie item
 
-```http 
+``` 
   GET /movie/find/id=
 ```
 
@@ -47,7 +47,7 @@ npm run start
 
 #### Delete movie item
 
-```http 
+``` 
   DELETE /movie/delete/id=
 ```
 
@@ -57,7 +57,7 @@ npm run start
 
 #### Update movie item
 
-```http 
+``` 
   POST /movie/update
 ```
 
@@ -67,7 +67,7 @@ npm run start
 
 #### Create movie item
 
-```http 
+``` 
   POST /movie/create
 ```
 
@@ -77,7 +77,7 @@ npm run start
 
 ## For genre items use same template beside `BODY` and `URL`
 
-```http 
+``` 
     /genre/{create,delete ...}
 ```
 | Body                                      | Type                                          | Description                       |
