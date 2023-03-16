@@ -13,7 +13,8 @@ export class App {
     this.reqMethods = new ReqMethods(this.server)
   }
 
-  public run = async () => {
+  public run = () => {
+    this.reqMethods.checkRoutes()
     this.controller.createMovie()
     this.controller.deleteMovie()
     this.controller.updateMovie()

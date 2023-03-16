@@ -2,6 +2,8 @@ import * as http from 'http'
 import { HTTP_METHODS, http_response } from './types'
 import { createMovieValidation } from './validation/create-movie.validation'
 import { createGenreValidation } from './validation/create-genre.validation'
+import { CreateGenreDto } from './dto/create-genre.dto'
+import { CreateMovieDto } from './dto/create-movie.dto'
 
 export class ReqMethods {
   private server: http.Server
@@ -20,62 +22,68 @@ export class ReqMethods {
       params?: object | any
     ) => void
   ) => {
-    this.server.on('request', (req, res) => {
+    this.server.on('request', async (req, res) => {
       if (req.method == method && req.url?.includes(url)) {
-        let body, params
-        this.getBody(req, res, data => {
-          body = data
-          cb(req, res, body)
-        })
-        this.getParams(req, data => {
-          params = data
+        if (req.method == 'POST') {
+          await this.getBody(req, res, body => {
+            cb(req, res, body, undefined)
+          })
+        }
+        if (req.method == 'GET') {
+          const params = this.getParams(req)
           cb(req, res, undefined, params)
-        })
-        if (body || params) cb(req, res, body, params)
+        }
       }
     })
   }
 
-  private getBody = (
+  public checkRoutes = () => {
+    this.server.on('request', (req, res) => {
+      res.writeHead(404)
+      if (!req.url?.match('(movie|genre)/(find|create|udpate|delete)')) {
+        res.end()
+      }
+      if (req.url?.includes('find') && req.method != 'GET') res.end()
+      if (req.url?.includes('create') && req.method != 'POST') res.end()
+      if (req.url?.includes('update') && req.method != 'POST') res.end()
+      if (req.url?.includes('delete') && req.method != 'DELETE') res.end()
+      return
+    })
+  }
+
+  private getBody = async (
     req: http.IncomingMessage,
     res: http_response,
-    cb: (body: any) => void
+    cb: (body: CreateMovieDto | CreateGenreDto) => void
   ) => {
     let body = ''
     req.on('data', data => {
       body += data
-      if (body.length > 1e6) {
-        this.server.closeAllConnections()
-        console.log('disconnect')
-        return null
-      }
     })
     req.on('end', async () => {
       if (body != '' && req.url?.includes('movie')) {
         const createMovieDto = await createMovieValidation(body, res)
-        if (createMovieDto.title) {
+        if (createMovieDto?.title) {
           cb(createMovieDto)
         }
-      } else if (body != '' && req.url?.includes('genre')) {
+      }
+      if (body != '' && req.url?.includes('genre')) {
         const createGenreDto = await createGenreValidation(body, res)
-        if (createGenreDto.name) {
+        if (createGenreDto?.name) {
           cb(createGenreDto)
         }
       }
     })
   }
 
-  private getParams = (
-    req: http.IncomingMessage,
-    cb: (params: object | any) => void
-  ) => {
+  private getParams = (req: http.IncomingMessage) => {
     const params_str = req.url?.split('/').slice(2)
     const params: { [key: string]: string } = {}
     if (params_str && params_str.length > 0) {
       params_str.map(str => {
         params[str.split('=')[0]] = str.split('=')[1]
       })
-      cb(params)
+      return params
     }
   }
 }

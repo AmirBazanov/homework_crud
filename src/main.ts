@@ -10,4 +10,4 @@ const main = () => {
   return server
 }
 
-main().listen(3000, () => console.log('server runs'))
+main().listen(3000, () => console.log('Server runs on http://localhost:3000'))

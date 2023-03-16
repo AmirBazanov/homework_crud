@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client'
 import { CreateMovieDto } from '../dto/create-movie.dto'
-import { createErrors } from './prisma-error-handler'
 import { CreateGenreDto } from '../dto/create-genre.dto'
 
 export class DB {
@@ -36,7 +35,7 @@ export class DB {
         },
       })
     } catch (err: any) {
-      createErrors(err)
+      throw { error_code: err.code, message: err.meta }
     }
     return result
   }
@@ -121,7 +120,7 @@ export class DB {
         },
       })
     } catch (err: any) {
-      createErrors(err)
+      throw { error_code: err.code, message: err.meta }
     }
     return result
   }
@@ -168,7 +167,6 @@ export class DB {
           : undefined
       )
     } catch (err: any) {
-      console.log(err)
       throw { error_code: err.code, message: err.meta }
     }
     if (result) {
